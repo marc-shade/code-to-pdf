@@ -1,7 +1,3 @@
-# code-to-pdf
-Use Ollama to document your code!
-
-
 # Repository Documentation Generator
 
 This project provides a tool to generate comprehensive documentation for all Python files in a given repository and compile them into a PDF. It uses an AI model to generate documentation and the `fpdf` library to create the PDF.
