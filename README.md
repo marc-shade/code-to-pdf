@@ -1,5 +1,7 @@
 # Repository Documentation Generator
 
+<img src="https://2acrestudios.com/wp-content/uploads/2024/05/00009-2050270248.png" align="right" style="width: 300px;" />
+
 This project provides a tool to generate comprehensive documentation for all Python files in a given repository and compile them into a PDF. It uses an AI model to generate documentation and the `fpdf` library to create the PDF.
 
 ## Features
