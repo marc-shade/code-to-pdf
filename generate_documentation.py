@@ -68,7 +68,7 @@ def get_all_code_files(root_dir):
     return code_files
 
 def main():
-    root_dir = "/Volumes/FILES/server/AutoGroq-main/TeamForgeAI"  # Replace with the path to your repository
+    root_dir = "/your_repository/"  # Replace with the path to your repository
     pdf = PDF()
     pdf.set_left_margin(10)
     pdf.set_right_margin(10)
@@ -93,7 +93,7 @@ def main():
 
         pdf.add_chapter(chapter_title, chapter_body)
 
-    output_pdf_path = "/Volumes/FILES/server/AutoGroq-main/TeamForgeAI/repository_documentation.pdf"
+    output_pdf_path = "/your_repository/repository_documentation.pdf"
     pdf.output(output_pdf_path, 'F')
     print(f"PDF documentation generated: {output_pdf_path}")
 
