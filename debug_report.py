@@ -30,8 +30,19 @@ class PDF(FPDF):
 def generate_documentation(file_content):
     url = "http://localhost:11434/api/generate"
     payload = {
-        "model": "mistral:7b-instruct-v0.3-fp16",
-        "prompt": f"You are an expert Python code debugger with a deep understanding of Pythonic code practices. You will go over the code with a holistic approach, providing advice where you see issues and give recommendations - Provide a complete, detailed, and nicely formatted debug report for the following code:\n\n{file_content}",
+        "model": "llama3:8b-instruct-fp16",
+        "prompt": f"""
+You are a highly experienced Python code debugger with a deep understanding of Pythonic best practices and coding standards. Your task is to thoroughly analyze the provided code, identify any issues, and offer recommendations for improvements. Follow these steps:
+
+1. **Identify Issues**: Go through the code line by line and identify syntax errors, logical errors, performance issues, and any non-Pythonic practices.
+2. **Provide Recommendations**: For each issue identified, provide a detailed explanation of why it is an issue and how it can be fixed or improved.
+3. **Code Examples**: Whenever possible, include code snippets to illustrate the recommended changes or improvements.
+4. **Formatting**: Ensure that your debug report is well-organized, clearly formatted, and easy to read. Use bullet points, headers, and code blocks where necessary.
+
+Generate a comprehensive and neatly formatted debug report for the following code:
+
+{file_content}
+""",
         "temperature": 0.3,
         "max_tokens": 8000,
         "stream": True,  # Enable streaming response
@@ -85,7 +96,7 @@ def process_file(file_path):
         return file_path, "Error reading file: UnicodeDecodeError", "", ""
 
 def main():
-    root_dir = "/your_path"  # Replace with the path to your repository
+    root_dir = "/Volumes/FILES/server/AutoGroq-main/TeamForgeAI"  # Replace with the path to your repository
     pdf = PDF()
     pdf.set_left_margin(10)
     pdf.set_right_margin(10)
