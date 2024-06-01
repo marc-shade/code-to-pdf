@@ -4,6 +4,7 @@ import json
 from fpdf import FPDF
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import subprocess
 
 class PDF(FPDF):
     def header(self):
@@ -30,7 +31,7 @@ def generate_documentation(file_content):
     url = "http://localhost:11434/api/generate"
     payload = {
         "model": "mistral:7b-instruct-v0.3-fp16",
-        "prompt": f"Provide a complete, detailed, and nicely formatted debug report for the following code:\n\n{file_content}",
+        "prompt": f"You are an expert Python code debugger with a deep understanding of Pythonic code practices. You will go over the code with a holistic approach, providing advice where you see issues and give recommendations - Provide a complete, detailed, and nicely formatted debug report for the following code:\n\n{file_content}",
         "temperature": 0.3,
         "max_tokens": 8000,
         "stream": True,  # Enable streaming response
@@ -60,6 +61,10 @@ def generate_documentation(file_content):
         print(f"Error making request to {url}: {e}")
         return "Error generating documentation: Request failed"
 
+def run_pylint(file_path):
+    result = subprocess.run(['pylint', file_path], capture_output=True, text=True)
+    return result.stdout
+
 def get_all_code_files(root_dir):
     code_files = []
     for subdir, _, files in os.walk(root_dir):
@@ -73,10 +78,11 @@ def process_file(file_path):
         with open(file_path, 'r', encoding='utf-8') as file:
             file_content = file.read()
         documentation = generate_documentation(file_content)
-        return file_path, documentation, file_content
+        pylint_report = run_pylint(file_path)
+        return file_path, documentation, pylint_report, file_content
     except UnicodeDecodeError:
         print(f"Error reading file {file_path}: UnicodeDecodeError")
-        return file_path, "Error reading file: UnicodeDecodeError", ""
+        return file_path, "Error reading file: UnicodeDecodeError", "", ""
 
 def main():
     root_dir = "/your_path"  # Replace with the path to your repository
@@ -91,12 +97,12 @@ def main():
     with ThreadPoolExecutor(max_workers=10) as executor:
         futures = {executor.submit(process_file, file_path): file_path for file_path in code_files}
         for future in tqdm(as_completed(futures), total=len(futures), desc="Processing files", unit="file"):
-            file_path, documentation, file_content = future.result()
+            file_path, documentation, pylint_report, file_content = future.result()
             chapter_title = f"File: {file_path}"
-            chapter_body = f"{documentation}\n\n{file_content}"
+            chapter_body = f"Pylint Report:\n{pylint_report}\n\nDocumentation:\n{documentation}\n\nCode:\n{file_content}"
             pdf.add_chapter(chapter_title, chapter_body)
 
-    output_pdf_path = os.path.join(root_dir, "/your_path/debug_report.pdf")
+    output_pdf_path = os.path.join(root_dir, "debug_report.pdf")
     pdf.output(output_pdf_path, 'F')
     print(f"PDF documentation generated: {output_pdf_path}")
 
