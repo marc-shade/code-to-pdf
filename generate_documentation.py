@@ -29,8 +29,20 @@ class PDF(FPDF):
 def generate_documentation(file_content):
     url = "http://localhost:11434/api/generate"
     payload = {
-        "model": "mistral:7b-instruct-v0.3-fp16",
-        "prompt": f"Generate documentation and commentary for the following code:\n\n{file_content}",
+        "model": "llama3:8b-instruct-fp16",
+        "prompt": f"""
+You are an expert in Python programming and technical writing. Your task is to generate comprehensive documentation and insightful commentary for the provided Python code. Follow these steps:
+
+1. **Overview**: Provide a high-level summary of what the code does, its purpose, and its main components.
+2. **Code Walkthrough**: Go through the code section by section, explaining the functionality of each part. Highlight key functions, classes, and methods.
+3. **Best Practices**: Identify any non-Pythonic practices or areas where the code could be improved. Suggest best practices and optimizations.
+4. **Examples**: Where applicable, include example usages or scenarios that demonstrate how the code should be used.
+5. **Formatting**: Ensure that the documentation is well-organized, clearly formatted, and easy to read. Use bullet points, headers, and code blocks where necessary.
+
+Generate a detailed and neatly formatted documentation for the following code:
+
+{file_content}
+""",
         "temperature": 0.3,
         "max_tokens": 8000,
         "stream": True,  # Enable streaming response
@@ -79,7 +91,7 @@ def process_file(file_path):
         return file_path, "Error reading file: UnicodeDecodeError", ""
 
 def main():
-    root_dir = "/your_path"  # Replace with the path to your repository
+    root_dir = "/Volumes/FILES/server/AutoGroq-main/TeamForgeAI"  # Replace with the path to your repository
     pdf = PDF()
     pdf.set_left_margin(10)
     pdf.set_right_margin(10)
@@ -96,7 +108,7 @@ def main():
             chapter_body = f"{documentation}\n\n{file_content}"
             pdf.add_chapter(chapter_title, chapter_body)
 
-    output_pdf_path = os.path.join(root_dir, "/your_path/repository_documentation.pdf")
+    output_pdf_path = os.path.join(root_dir, "repository_documentation.pdf")
     pdf.output(output_pdf_path, 'F')
     print(f"PDF documentation generated: {output_pdf_path}")
 
